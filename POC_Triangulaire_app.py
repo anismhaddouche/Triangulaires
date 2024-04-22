@@ -1,13 +1,3 @@
-"""
-Application Streamlit pour visualiser les soldes entre 3 agences.
-Auteur : Anis HADDOUCHE
-Date : 2024-04-22
-Données : Ceux de l'onglet ST - Détails du PUSH Mouvements_Emballages dont la date des soldes est le  31/03/2024
-Remarque : 
-     - Toute la partie Streamlit a été entiérement écrite par Chatgpt (pour aller vite car limité par le temps)
-     - Se référer au notebook POC_Triangulaire.ipynb pour plus de détails sur la méthode de calcul
-"""
-
 import pandas as pd 
 import matplotlib.pyplot as plt
 import streamlit as st
@@ -22,24 +12,32 @@ mois_an_solde = st.selectbox("## Choisissez une date :", sorted(data['Date Solde
 # st.title(f"Date des soldes : {mois_an_solde}")
 
 
-df_all = data[data["Date Solde"] == mois_an_solde]
+# df_all = data[(data["Date Solde"] == mois_an_solde ) & (data['Solde'] != 0)]
+df_all = data[(data["Date Solde"] == mois_an_solde )]
 st.write(df_all)
+
+# Affichage des agences côte à côte
+col1, col2, col3 = st.columns(3)
+
 # 1- Afficher le df_all des commandes confirmées et demander à l'utilisateur de Choisir la première agence (A)
 df = df_all[df_all["Solde confirmé ?"] == 'Oui']
-st.write("## Sélection de l'agence A")
-selected_agence_a = st.selectbox("Choisissez l'agence A :", sorted(df['agence_1'].unique()))
+with col1:
+    st.write("## Sélection de l'agence A")
+    selected_agence_a = st.selectbox("Choisissez l'agence A :", sorted(df['agence_1'].unique()))
 
 # 2.1- L'utilisateur doit choisir dans la colonne 2 de df_a une deuxième agence (B)
-st.write("## Sélection de l'agence B")
-df_a = df[df['agence_1'] == selected_agence_a]
-selected_agence_b = st.selectbox("Choisissez l'agence B :", sorted(df_a['agence_2']))
+with col2:
+    st.write("## Sélection de l'agence B")
+    df_a = df[df['agence_1'] == selected_agence_a]
+    selected_agence_b = st.selectbox("Choisissez l'agence B :", sorted(df_a['agence_2'].unique()))
 
 # 2.2- Filtrer sur agence_b dans le df --> en sortie df_b
 df_b = df[(df['agence_1'] == selected_agence_b) & (df['agence_2'] != selected_agence_a)]
 
 # 3.1- L'utilisateur doit choisir dans la colonne 2 de df_b une troisième agence (c)
-st.write("## Sélection de l'agence C")
-selected_agence_c = st.selectbox("Choisissez l'agence C :", sorted(df_b['agence_2'].unique()))
+with col3:
+    st.write("## Sélection de l'agence C")
+    selected_agence_c = st.selectbox("Choisissez l'agence C :", sorted(df_b['agence_2'].unique()))
 
 # Calcul des soldes entre les agences sélectionnées
 Solde_ab = df[(df["agence_1"] == selected_agence_a) & (df["agence_2"] == selected_agence_b)]
@@ -108,4 +106,3 @@ else :
         ax.axis('off')
     plt.tight_layout()
     st.pyplot(fig)
-
