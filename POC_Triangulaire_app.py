@@ -14,7 +14,7 @@ mois_an_solde = st.selectbox("## Choisissez une date :", sorted(data['Date Solde
 
 # df_all = data[(data["Date Solde"] == mois_an_solde ) & (data['Solde'] != 0)]
 df_all = data[(data["Date Solde"] == mois_an_solde )]
-st.write(df_all)
+# st.write(df_all)
 
 # Affichage des agences côte à côte
 col1, col2, col3 = st.columns(3)
