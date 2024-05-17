@@ -162,7 +162,7 @@ else:
         plt.tight_layout()
         st.pyplot(fig)
         st.write("""
-                (*) Comment les ces graphiques :
+                (*) Comment lire ces graphiques :
                 * Vert (solde négatif) : Lorsque la colonne est en vert, cela signifie que l’agence en titre doit des palettes à l’agence en bas de la colonne.
                 * Rouge (solde positif) : Lorsque la colonne est en rouge, c’est l’inverse. Cela signifie que l’agence en titre doit récupérer des palettes de l’agence en bas.
                 """)
