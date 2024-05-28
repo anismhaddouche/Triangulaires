@@ -111,6 +111,13 @@ else:
         df2["agence_1"], df2["agence_2"] = df2["agence_2"], df2["agence_1"]
         df2["Solde"] *= -1
         df_final = pd.concat([soldes, df2], ignore_index=True)
+        st.write(df_final)
+        asymmetric_matrix = df_final.pivot(index='agence_1', columns='agence_2', values='Solde')
+        asymmetric_matrix = asymmetric_matrix.fillna(0)
+        st.write(asymmetric_matrix)
+        # Remplacer les NaN par 0 pour les valeurs absentes
+
+        print(asymmetric_matrix)    
         # Affichage des barres pour chaque agence avec Streamlit
         st.write("Visualisation des soldes (*) :")
         # Déterminer le nombre de colonnes pour la grille
