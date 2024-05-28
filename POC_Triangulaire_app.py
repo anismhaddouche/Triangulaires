@@ -24,6 +24,7 @@ with st.sidebar:
         df_support["Solde"] != 0
     ]
     df_support.drop_duplicates(inplace=True)
+    
 df_support.drop(["Date Solde", "Support"], axis=1, inplace=True)
 
 # Calcul de toutes les triangulaires possibles en fonction des filtres précédents
@@ -51,6 +52,7 @@ for combination in list_triangulaire:
     for agency in combination:
         unique_agencies.add(agency)
 unique_agencies_list = list(unique_agencies)
+unique_agencies_list.sort()
 
 if len(unique_agencies_list) == 0:
     st.write("# Pas de triangulaire possible")
@@ -104,7 +106,7 @@ else:
         ]
         # st.write("### Soldes entre A, B et Cs")
         soldes = pd.concat([Solde_ab, Solde_bc, Solde_ac], ignore_index=True)
-        # st.write(soldes)
+        st.write(soldes)
         df2 = soldes.copy()
         df2["agence_1"], df2["agence_2"] = df2["agence_2"], df2["agence_1"]
         df2["Solde"] *= -1
