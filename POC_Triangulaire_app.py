@@ -6,10 +6,8 @@ st.set_page_config(layout="wide")
 
 
 
-
 #  Charger les données
 st.write("# Avant triangulaires ")
-
 df = pd.read_csv(
     "data/Mouvements_Emballages_ST_Details_cleaned.csv",
     sep=";",
@@ -30,12 +28,10 @@ with st.sidebar:
     df_support.drop_duplicates(inplace=True)
     
 df_support.drop(["Date Solde", "Support"], axis=1, inplace=True)
-
 # Chercher toutes les triangulaires possibles
 list_triangulaire = get_triangulaires(df_support)
 # Lister les agences qui apparaissent dans au moins une triangulaire
 unique_agencies_list = get_agences_triangulaires(list_triangulaire)
-
 
 if len(unique_agencies_list) == 0:
     st.write("# Pas de triangulaire possible")
@@ -90,16 +86,15 @@ else:
         ]
         # st.write("### Soldes entre A, B et Cs")
         soldes = pd.concat([Solde_ab, Solde_bc, Solde_ac], ignore_index=True)
-        st.write(soldes)
+        # st.write(soldes)
         df2 = soldes.copy()
         df2["agence_1"], df2["agence_2"] = df2["agence_2"], df2["agence_1"]
         df2["Solde"] *= -1
         df_final = pd.concat([soldes, df2], ignore_index=True)
-
         # st.write(df_final)
 
         # Affichage des barres pour chaque agence avec Streamlit
-        st.write("Visualisation des soldes avant les triangulaires (*) :")
+        st.write("Visualisation des soldes avant triangulaire (*) :")
         plot_triangulaires(df_final)
        
     
