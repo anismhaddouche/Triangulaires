@@ -6,13 +6,11 @@ st.set_page_config(layout="wide")
 
 
 
-  
-
 #  Charger les données
-st.write("# Triangulaires avant")
+st.write("# Avant triangulaires ")
 df = pd.read_csv(
     "data/Mouvements_Emballages_ST_Details_cleaned.csv",
-    sep=",",
+    sep=";",
     encoding="utf8",
     index_col=[0],
 )
@@ -103,7 +101,7 @@ else:
         # if st.button("Action"):
             # agency1 = "PLM PLAN D'ORGON"
             # agency2 = "GUIDEZ MONCHY LE PREUX"
-        st.write("# Triangulaires après")
+        st.write("# Après triangulaires ")
         unique_agencies_list = list(df_final['agence_1'].unique())
         agency1 = st.selectbox("Choisissez l'agence A :", unique_agencies_list)
         unique_agencies_list.remove(agency1)
