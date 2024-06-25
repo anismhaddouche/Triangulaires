@@ -1,11 +1,15 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
-
+from utiles import balance_two_accounts, get_triangulaires, get_agences_triangulaires, plot_triangulaires, reverse_asymetric_matrix
 st.set_page_config(layout="wide")
 
 
+
+
 #  Charger les données
+st.write("# Avant triangulaires ")
+
 df = pd.read_csv(
     "data/Mouvements_Emballages_ST_Details_cleaned.csv",
     sep=";",
@@ -27,32 +31,11 @@ with st.sidebar:
     
 df_support.drop(["Date Solde", "Support"], axis=1, inplace=True)
 
-# Calcul de toutes les triangulaires possibles en fonction des filtres précédents
-list_triangulaire = []
-for agence_a in df_support["agence_1"].unique():
-    for agence_b in df_support["agence_2"].unique():
-        if not df_support[
-            (df_support["agence_1"] == agence_a)
-            & (df_support["agence_2"] == agence_b)
-        ].empty:
-            for agence_c in df_support["agence_1"].unique():
-                if not df_support[
-                    (df_support["agence_1"] == agence_b)
-                    & (df_support["agence_2"] == agence_c)
-                ].empty:
-                    if not df_support[
-                        (df_support["agence_1"] == agence_c)
-                        & (df_support["agence_2"] == agence_a)
-                    ].empty:
-                        list_triangulaire.append([agence_a, agence_b, agence_c])
-
+# Chercher toutes les triangulaires possibles
+list_triangulaire = get_triangulaires(df_support)
 # Lister les agences qui apparaissent dans au moins une triangulaire
-unique_agencies = set()
-for combination in list_triangulaire:
-    for agency in combination:
-        unique_agencies.add(agency)
-unique_agencies_list = list(unique_agencies)
-unique_agencies_list.sort()
+unique_agencies_list = get_agences_triangulaires(list_triangulaire)
+
 
 if len(unique_agencies_list) == 0:
     st.write("# Pas de triangulaire possible")
@@ -86,6 +69,7 @@ else:
 
     else:
         # st.write(f"### {len(list_agences_c)} triangulaire(s) possible(s)")
+       
         selected_agence_c = st.selectbox(
             f"Choisissez l'agence C ({len(list_agences_c)} triangulaire(s) possible(s)) :", sorted(list_agences_c)
         )
@@ -111,58 +95,38 @@ else:
         df2["agence_1"], df2["agence_2"] = df2["agence_2"], df2["agence_1"]
         df2["Solde"] *= -1
         df_final = pd.concat([soldes, df2], ignore_index=True)
-        st.write(df_final)
+
+        # st.write(df_final)
+
+        # Affichage des barres pour chaque agence avec Streamlit
+        st.write("Visualisation des soldes avant les triangulaires (*) :")
+        plot_triangulaires(df_final)
+       
+    
+        # if st.button("Action"):
+            # agency1 = "PLM PLAN D'ORGON"
+            # agency2 = "GUIDEZ MONCHY LE PREUX"
+        st.write("# Après triangulaires ")
+        unique_agencies_list = list(df_final['agence_1'].unique())
+        agency1 = st.selectbox("Choisissez l'agence A :", unique_agencies_list)
+        unique_agencies_list.remove(agency1)
+        agency2 = st.selectbox("Choisissez l'agence B :",unique_agencies_list )
+
+        # st.write(df_final.sort_values(by=["agence_1"]))
+        
         asymmetric_matrix = df_final.pivot(index='agence_1', columns='agence_2', values='Solde')
         asymmetric_matrix = asymmetric_matrix.fillna(0)
-        st.write(asymmetric_matrix)
-        # Remplacer les NaN par 0 pour les valeurs absentes
-
-        print(asymmetric_matrix)    
-        # Affichage des barres pour chaque agence avec Streamlit
-        st.write("Visualisation des soldes (*) :")
-        # Déterminer le nombre de colonnes pour la grille
-        num_cols = 3
-        # Déterminer le nombre total d'agences et le nombre de lignes nécessaires
-        num_agences = len(df_final["agence_1"].unique())
-        num_rows = (num_agences + num_cols - 1) // num_cols
-        # Créer une grille de graphiques côte à côte
-        fig, axs = plt.subplots(num_rows, num_cols, figsize=(15, 5 * num_rows))
-        # Parcourir chaque agence et créer un graphique
-        for i, agence in enumerate(df_final["agence_1"].unique()):
-            df_agence = df_final[df_final["agence_1"] == agence]
-            colors = ["green" if solde < 0 else "red" for solde in df_agence["Solde"]]
-            row = i // num_cols
-            col = i % num_cols
-            # Vérifier si l'index est valide avant d'accéder à la grille d'axes
-            if num_rows > 1:
-                ax = axs[row, col] if i < num_agences else None
-            else:
-                ax = axs[col] if i < num_agences else None
-            if ax is not None:
-                bars = ax.bar(
-                    list(df_agence["agence_2"].values), df_agence["Solde"], color=colors
-                )
-                for bar, solde in zip(bars, df_agence["Solde"]):
-                    ax.text(
-                        bar.get_x() + bar.get_width() / 2,
-                        bar.get_height(),
-                        str(solde),
-                        ha="center",
-                        va="bottom",
-                    )
-                ax.set_title(agence)
-        # Supprimer les axes non utilisés
-        for i in range(num_agences, num_rows * num_cols):
-            row = i // num_cols
-            col = i % num_cols
-            # Vérifier si l'index est valide avant d'accéder à la grille d'axes
-            if num_rows > 1:
-                ax = axs[row, col]
-            else:
-                ax = axs[col]
-            ax.axis("off")
-        plt.tight_layout()
-        st.pyplot(fig)
+        # st.write((asymmetric_matrix))
+        
+    
+        # # Appeler la fonction pour équilibrer les comptes
+        balanced_asymmetric_matrix = balance_two_accounts(asymmetric_matrix, agency1, agency2)
+        reversed_reverse_asymetric_matrix = reverse_asymetric_matrix(balanced_asymmetric_matrix)
+        # st.write(reversed_reverse_asymetric_matrix)
+        # st.write(balanced_asymmetric_matrix)
+        st.write("Visualisation des soldes après triangulaire (*) :")
+        plot_triangulaires(reversed_reverse_asymetric_matrix, 3)
+            
         st.write("""
                 (*) Comment lire ces graphiques :
                 * Rouge (solde positif)   : Lorsque la colonne est en rouge, cela signifie que l’agence en titre doit des palettes à l’agence en bas de la colonne.
