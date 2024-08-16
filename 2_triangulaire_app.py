@@ -16,8 +16,8 @@ with st.sidebar:
     support = st.selectbox(
         "## Choisissez un support : ", SUPPORT
     )
-    
-with open(f"data/1_triangles_{support}.json","r") as f_in:
+file_name = support.replace(" ","_")    
+with open(f"data/1_triangles_{file_name}.json","r") as f_in:
     data=json.load(f_in)
 
  
@@ -52,7 +52,7 @@ list_tier_c.sort()
 selected_tier_c = st.selectbox("Choisissez le second tier (agence, client ou transporteur):", list_tier_c)
 
 #-4 Afficher les données
-data = search_triangle_in_json(selected_agence_a, selected_tier_b, selected_tier_c,support=support)
+data = search_triangle_in_json(selected_agence_a, selected_tier_b, selected_tier_c,support=file_name)
 df = pd.DataFrame(data['data'])
 st.write(df)
 plot_triangulaires(df)
