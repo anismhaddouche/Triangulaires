@@ -12,6 +12,7 @@ def get_triangulaires(df: pd.DataFrame, type_pal:str)->Dict[str, List[Union[int,
     
     start_time = time.time()
     output_file=f"data/1_triangles_{type_pal}.json"
+    output_file=output_file.replace(" ","_")
     
     df_pal=df[df["Support"]==type_pal]
     
