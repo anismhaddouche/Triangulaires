@@ -29,6 +29,7 @@ def get_triangulaires(df: pd.DataFrame, type_pal:str)->Dict[str, List[Union[int,
 
     # Itérer sur chaque agence principale avec une barre de progression
     for agence_a in tqdm(agences_principales, desc="Recherche des triangulaires..."):
+        print(agence_a)
         # Liste pour stocker les triangles avec leurs données pour l'agence actuelle
         triangles_agence_data = []
 
@@ -81,8 +82,8 @@ def get_triangulaires(df: pd.DataFrame, type_pal:str)->Dict[str, List[Union[int,
 
 if __name__=="__main__":
     df = pd.read_excel('data/0_final.xlsx')
-    print('### Traitement des Palettes EUROPE...')
-    get_triangulaires(df, 'PAL EUROPE')
+    # print('### Traitement des Palettes EUROPE...')
+    # get_triangulaires(df, 'PAL EUROPE')
     print('### Traitement des Palettes DUSS...')
     get_triangulaires(df, 'PAL DUSS')
 

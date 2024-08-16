@@ -2,17 +2,21 @@ import streamlit as st
 import pandas as pd 
 import json 
 import matplotlib.pyplot as plt 
+from datetime import datetime
 from utiles import *
 st.set_page_config(layout="wide")
 
 
-# Charger les données
+# ############################### Chargement des données  ###############################
+
+
+SUPPORT=['PAL EUROPE', 'PAL DUSS']
+DATE = pd.read_excel("data/00_raw.xlsx",sheet_name="Feuil1")["Soldes Validés -Détails"].loc[2]
+DATE = DATE.strftime("%d %b %Y")
 
 # Création de sidebar pour choisir type de support
-SUPPORT=['PAL EUROPE', 'PAL DUSS']
-
 with st.sidebar:
-    st.write(f"## Date de solde :    date ")
+    st.write(f"## Date de solde :    {DATE} ")
     support = st.selectbox(
         "## Choisissez un support : ", SUPPORT
     )
@@ -20,10 +24,15 @@ file_name = support.replace(" ","_")
 with open(f"data/1_triangles_{file_name}.json","r") as f_in:
     data=json.load(f_in)
 
- 
-st.write("# Avant triangulaires ")
-###############################  Avant Triangulaire  ###############################
+if len(data) ==0:
+    st.write("# Pas de triangulaires possible")
+    st.stop() 
+    
+    
+    
 
+###############################  Avant Triangulaire  ###############################
+st.write("# Avant triangulaires ")
 #-1 Choisir l'agence a 
 list_agence_a = list(data.keys())
 list_agence_a.sort()
@@ -57,8 +66,9 @@ df = pd.DataFrame(data['data'])
 st.write(df)
 plot_triangulaires(df)
 
-st.write("# Aprés triangulaires ")
+
 ###############################  Après Triangulaire  ###############################
+st.write("# Aprés triangulaires ")
 
 #5- Choisir deux tiers dont on souhaite réduire le solde à 0
 unique_agencies_list = list(df['T_1'].unique())
