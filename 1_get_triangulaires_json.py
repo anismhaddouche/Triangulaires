@@ -84,8 +84,8 @@ if __name__=="__main__":
     df = pd.read_excel('data/0_final.xlsx')
     # print('### Traitement des Palettes EUROPE...')
     # get_triangulaires(df, 'PAL EUROPE')
-    print('### Traitement des Palettes EUROPE...')
-    get_triangulaires(df, 'PAL EUROPE')
+    print('### Traitement des Palettes DUSS...')
+    get_triangulaires(df, 'PAL DUSS')
 
 
 
